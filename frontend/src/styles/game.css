@@ -1,0 +1,58 @@
+/*.body {
+  overflow:hidden;
+}*/
+
+.game {
+  position: absolute;
+}
+
+.box {
+  display: inline-block;
+  border: 1px solid grey;
+  text-align: center;
+  width: 75px;
+}
+
+th, td {
+  width: 30px;
+  text-align: center;
+}
+
+th:first-child, td:first-child {
+  width: 150px;
+  text-align: left;
+}
+
+.pitch-info {
+  background-color: white;
+  display: block;
+  width: 200px;
+  text-align: left;
+}
+
+.atbat-selector-container {
+  width: 225px;
+  display:inline-block;
+}
+
+.atbat {
+  width:235px;
+  vertical-align: top;
+  padding: 20px;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+}
+
+.current-atbat {
+  display:inline-block;
+}
+
+.inning-atbats {
+  height: 750px;
+  overflow-y: scroll;
+  width: 250px;
+}
+
+.hidden {
+  display: none;
+}

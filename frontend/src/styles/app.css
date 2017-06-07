@@ -1,0 +1,8 @@
+.game-box, .game-box:hover {
+  display: inline-block;
+  width: 75px;
+  border: 1px black solid;
+  color: black;
+  text-decoration:none;
+  cursor:default;
+}
