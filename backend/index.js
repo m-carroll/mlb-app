@@ -20,9 +20,9 @@ function padDigit(n) {
   return n < 10 ? '0' + n : String(n)
 }
 
-const date = new Date(2017, 5, 5),
-      baseMLBURL = 'http://gd2.mlb.com/components/game/mlb/',
-      baseMLBURLToday = `http://gd2.mlb.com/components/game/mlb/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
+let date = new Date(),
+    baseMLBURL = 'http://gd2.mlb.com/components/game/mlb/',
+    baseMLBURLToday = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
 
 app.get('/', (req, res) => {
   resetGameData()
@@ -79,7 +79,10 @@ app.post('/stopserver', (req, res) => {
 })
 
 app.get('/gamesfordate/:datestring', (req, res) => {
-  request(`${baseMLBURL}${req.params.datestring}/miniscoreboard.json`, (error, response, body) => {
+  const splitDate = req.params.datestring.split('_')
+  date = new Date(splitDate[0], Number(splitDate[1])-1, splitDate[2])
+  baseMLBURLToday = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
+  request(`${baseMLBURL}year_${splitDate[0]}/month_${splitDate[1]}/day_${splitDate[2]}/miniscoreboard.json`, (error, response, body) => {
     if (error) {
       console.log('error in gamesfordate', error)
       return res.json([])

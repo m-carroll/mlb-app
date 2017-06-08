@@ -7,7 +7,7 @@ class PitchDetails extends Component {
                   "SL": 'slider', "KC": 'knuckle-curve', "CH": 'changup', "SI":'sinker', "SF":'splitter', "FA":'fastball', "CB":'curveball', "FS":'sinker' }
     const x = this.props.x
     return (
-      <p className='btn btn-default pitch-info' onClick={this.props.expand}>
+      <p className={`btn btn-${this.props.isColorful ? 'primary' : 'default'} pitch-info`} onClick={this.props.expand}>
         <span>{this.props.pitchNum}: {x.des}</span>
         <span className={this.props.showing ? '' : 'hidden'}>
           <br/>Type: {type[x.pitch_type] ||'??'}

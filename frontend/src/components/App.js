@@ -72,7 +72,7 @@ class App extends Component {
       const clear = setInterval(() => {
         if (!this.state.update) clearInterval(clear)
         this.updateNavbar(false)
-      }, 10000)
+      }, 2000)
     }
     else {
       axios.get('http://localhost:8080/updatenavbar')
@@ -152,7 +152,8 @@ class App extends Component {
   }
 
   changeDate(date) {
-    axios.get(`http://localhost:8080/gamesfordate/${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`)
+    const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
+    axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
          .then( res => {
            this.setState({
              homeGamesDisplayed: res.data,
@@ -171,7 +172,7 @@ class App extends Component {
     const gameboxes = this.state.games.map( (x, i) => {
       return <GameBox game={x} 
                       key={i}
-                      linkURL={(x.status === 'Preview' ? '/preview' : '/games') + `/gid_${x.id.replace(/\/|-/gi, '_')}`}
+                      linkURL={(x.status === 'Preview' || x.status === 'Pre-Game' ? '/preview' : '/games') + `/gid_${x.id.replace(/\/|-/gi, '_')}`}
                       updateApp={this.updateApp} />
     })
     return (
