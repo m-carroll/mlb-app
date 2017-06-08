@@ -32,11 +32,12 @@ class App extends Component {
     this.toggleServer = this.toggleServer.bind(this)
     this.updateNavbar = this.updateNavbar.bind(this)
     this.changeDate = this.changeDate.bind(this)
+    this.loadGame = this.loadGame.bind(this)
   }
 
-  switchTeamDisplayed() {
+  switchTeamDisplayed(team) {
     this.setState({
-      teamDisplayed: this.state.teamDisplayed === 'home' ? 'away' : 'home'
+      teamDisplayed: team
     })
   }
 
@@ -52,6 +53,7 @@ class App extends Component {
     if (!gameID) return
     axios.get('http://localhost:8080/updategame')
           .then( res => {
+            if (res.data.gameID !== gameID) return
             this.setState({
               gameID: gameID,
               gameInfo: res.data.gameInfo,
@@ -97,22 +99,35 @@ class App extends Component {
           })
     }
     if (nextProps.params.gameid !== this.props.params.gameid) {
+      this.setState({
+        atBats:{empty:true}
+      })
       let isPreview = nextProps.location.pathname.split('/')[1] === 'preview'
-        if (isPreview) {
-          axios.get('http://localhost:8080/preview/' + nextProps.params.gameid)
-              .then( res => {
-                  this.setState({
-                    linescore: res.data
-                  })
-              })
-      } else {
-        axios.get('http://localhost:8080/games/' + nextProps.params.gameid)
-              .then( res => {
-                this.startGameUpdates(nextProps.params.gameid)
-              }).catch(err => {
-                console.log(err)
-              })
-      }
+      this.loadGame(nextProps.params.gameid, isPreview)
+    }
+  }
+
+  loadGame(gameID, isPreview) {
+    if (!gameID) return
+    if (isPreview) {
+      axios.get('http://localhost:8080/preview/' + gameID)
+          .then( res => {
+              setTimeout(() => {
+                this.setState({
+                  linescore: res.data
+                })
+              }, 1000)
+          }).catch(e => {
+            console.log(e)
+          })
+    } else {
+      axios.get('http://localhost:8080/games/' + gameID)
+            .then( res => {
+              if (res.data.gameID !== gameID) return
+              this.startGameUpdates(gameID)
+            }).catch(err => {
+              console.log(err)
+            })
     }
   }
 
@@ -161,11 +176,13 @@ class App extends Component {
     })
     return (
       <div className="App">
+        <Link to='/'><button className='btn btn-default'>Home</button></Link>
+        <button className='btn btn-default' onClick={this.toggleServer}>{this.state.update ? 'Disconnect from server' : 'Reconnect to server'}</button>
         <div className='navbar'>
           {gameboxes}
         </div>
-        <Link to='/'><button className='btn btn-default'>Home</button></Link>
-        {React.cloneElement(this.props.children, { gameInfo: this.state.gameInfo,
+        {React.cloneElement(this.props.children, { 
+                                                   gameInfo: this.state.gameInfo,
                                                    gameID: this.state.gameID,
                                                    teamDisplayed: this.state.teamDisplayed,
                                                    atBats: this.state.atBats,
@@ -176,8 +193,10 @@ class App extends Component {
                                                    changeDate: this.changeDate,
                                                    homeGamesDisplayed: this.state.homeGamesDisplayed,
                                                    currBatter: this.state.currBatter,
-                                                   })}
-        <button className='btn btn-default' onClick={this.toggleServer}>{this.state.update ? 'Disconnect from server' : 'Reconnect to server'}</button>
+                                                   loadGame: this.loadGame
+                                                }
+                            )
+        }
       </div>
     )
   }

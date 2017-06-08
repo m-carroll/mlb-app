@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
 import '../styles/game.css'
-// import { Link } from 'react-router'
-// import axios from 'axios'
-// import {XYPlot, XAxis, YAxis, HorizontalGridLines, MarkSeries} from 'react-vis'
 import Linescore from './Linescore'
 import AtBat from './AtBat'
 import Lineup from './Lineup'
@@ -29,17 +26,9 @@ class Game extends Component {
     this.showHideCard = this.showHideCard.bind(this)
   }
 
-  // mountGame() {
-  //   this.props.mountGame(this.props.params.gameid, 'games')
-  // }
-
   componentDidMount() {
-    this.setState({
-      selectedInningAtBats:[],
-      selectedInningForAtBats:0,
-      hiddenCards: [],
-    })
-    this.props.startGameUpdates()
+    //this is for refreshing, does not remount when changing games
+    this.props.loadGame(this.props.params.gameid, false)
   }
 
   showHideCard(index) {
@@ -50,11 +39,23 @@ class Game extends Component {
     })
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.params.gameid !== nextProps.params.gameid) {
+      this.setState({
+        selectedInningForAtBats: 0,
+        selectedInningAtBats: []
+      })
+    }
+    if (this.props.atBats.empty && !nextProps.atBats.empty) {
+      setTimeout(() => this.setInningAtBats(1), 500)
+    }
+  }
+
   setInningAtBats(inningNumber) {
     let inning = []
     let hiddenCards = []
-    if (inningNumber) {
-      let atBatsInning = Array.isArray(this.props.atBats.inning) ? this.props.atBats.inning[inningNumber-1] : [this.props.atBats.inning]
+    if (inningNumber && !this.props.atBats.empty) {
+      let atBatsInning = Array.isArray(this.props.atBats.inning) ? this.props.atBats.inning[inningNumber-1] : this.props.atBats.inning
       if (atBatsInning.top) {
         inning = inning.concat(Array.isArray(atBatsInning.top.atbat) ? atBatsInning.top.atbat.map(x => {
         x.half = 'Top'
@@ -70,27 +71,36 @@ class Game extends Component {
         }) : atBatsInning.bottom.atbat ? [atBatsInning.bottom.atbat] : [])
       }
       hiddenCards = inning.map( x => {return true})
+      this.setState({
+        selectedInningAtBats: inning,
+        selectedInningForAtBats: inningNumber,
+        hiddenCards: hiddenCards
+      })
     }
-    this.setState({
-      selectedInningAtBats: inning,
-      selectedInningForAtBats: inningNumber,
-      hiddenCards: hiddenCards
-    })
   }
 
   render() {
+    const baserunners = [
+                          'Bases empty', 
+                          'Runner on first', 
+                          'Runner on second', 
+                          'Runner on third', 'Runners on first and second', 
+                          'Runners on second and third', 
+                          'Bases loaded'
+                        ]
     const currBatter = this.props.currBatter
-    const currentAtBat = <span/>
-    /*!currBatter.empty ? <AtBat 
+    const currentAtBat = !currBatter.empty ? <AtBat 
                                                 index={0}
-                                                half={currBatter.top ? 'Top' : 'Bottom'}
+                                                half={currBatter.inningState}
                                                 inning={currBatter.inning}
-                                                atBat={currBatter.atbat}
-                                                pitches={Array.isArray(currBatter.atbat.p) ? currBatter.atbat.p : [currBatter.atbat.p]}
+                                                atBat={currBatter.game}
+                                                pitches={Array.isArray(currBatter.game.atbat.p) ? currBatter.game.atbat.p : [currBatter.game.atbat.p]}
                                                 hidden={false}
                                                 showHideCard={(i)=>{console.log("you can't hide from me!")}}
                                                 isCurrentBatter={true}
-                                                /> : <span/>*/
+                                                onDeck={currBatter.game.players.deck}
+                                                inHole={currBatter.game.players.hole}
+                                                /> : <span/>
     const atBatsForSelectedInning = this.state.selectedInningAtBats.map((x, i) => {
                                                                   return <AtBat key={i}
                                                                                 index={i}
@@ -115,28 +125,35 @@ class Game extends Component {
       res = <div>loading...</div>
     else res = (
       <div className="game">
-        <Linescore currentInning={{num:this.props.linescore.inning, state:this.props.linescore.inning_state || 'END'}}
-                   innings={this.props.linescore.linescore} 
-                   teams={{home: this.props.linescore.home_name_abbrev, away: this.props.linescore.away_name_abbrev}}
-                   linescore={this.props.gameInfo.linescore}/>
-        <div className="lineups-container">
-          <div className='lineup-toggle-box'>
-            <button className='btn btn-default' onClick={this.props.switchTeamDisplayed}>{this.props.gameInfo.home_sname}</button>
-            <button className='btn btn-default' onClick={this.props.switchTeamDisplayed}>{this.props.gameInfo.away_sname}</button>
+        <div className='left-column'>
+          <h2>
+            {this.props.linescore.away_name_abbrev} {this.props.linescore.away_team_runs} | {this.props.linescore.home_name_abbrev} {this.props.linescore.home_team_runs}
+          </h2>
+          <h4>  
+          {this.props.linescore.status === 'Final' ? 'Final' : 
+              (baserunners[this.props.linescore.runner_on_base_status] + ', ' + this.props.linescore.inning_state + ' ' + this.props.linescore.inning + ', ' + this.props.linescore.outs + ' out')}
+          </h4>
+          {inningsButtons}
+          <div className='atbat-container'>
+            {atBatsForSelectedInning}
           </div>
-          <Lineup batters={this.props.gameInfo.batting[this.props.teamDisplayed === 'home' ? 0 : 1].batter} 
-                  pitchers={this.props.gameInfo.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}/>
         </div>
-        <div>
-          <div className='atbats-selector-container'>
-              <h2>{this.props.currentInningNumberToDisplayAtBats ? `Inning ${this.props.currentInningNumberToDisplayAtBats}` : 'At-bats by inning'}</h2>
-              {inningsButtons}
-              <button className='btn btn-default' onClick={() => this.setInningAtBats(0)}>None</button>
-            <div className={`${this.state.selectedInningForAtBats ? 'inning-atbats' : 'hidden'}`}>
-              {atBatsForSelectedInning}
-            </div>
-          </div>
+        <div className='middle-column'>
           {currentAtBat}
+        </div>
+        <div className='right-column'>
+          <Linescore currentInning={{num:this.props.linescore.inning, state:this.props.linescore.inning_state || 'END'}}
+                      innings={this.props.linescore.linescore} 
+                      teams={{home: this.props.linescore.home_name_abbrev, away: this.props.linescore.away_name_abbrev}}
+                      linescore={this.props.gameInfo.linescore}/>
+          <div className="lineups-container">
+            <div className='lineup-toggle-box'>
+              <button className='btn btn-default' onClick={() => this.props.switchTeamDisplayed('home')}>{this.props.gameInfo.home_sname}</button>
+              <button className='btn btn-default' onClick={() => this.props.switchTeamDisplayed('away')}>{this.props.gameInfo.away_sname}</button>
+            </div>
+            <Lineup batters={this.props.gameInfo.batting[this.props.teamDisplayed === 'home' ? 0 : 1].batter} 
+                    pitchers={this.props.gameInfo.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}/>
+          </div>
         </div>
       </div>
     )

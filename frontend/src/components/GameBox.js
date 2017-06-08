@@ -14,8 +14,8 @@ class GameBox extends Component {
             to={this.props.linkURL} 
             activeStyle={{'backgroundColor': 'lightgrey', color: 'black', textDecoration:'none'}}>
         <div>
-          <span>{x.home_name_abbrev}: {x.home_team_runs || 0}
-          <br/>{x.away_name_abbrev}: {x.away_team_runs || 0}
+          <span>{x.away_name_abbrev}: {x.away_team_runs || 0}
+          <br/>{x.home_name_abbrev}: {x.home_team_runs || 0}
           <br/>{x.status === 'Final' ? x.status : x.status === 'Preview' ? x.time : (x.top_inning === 'Y' ? `Top ${x.inning}`: `Bottom ${x.inning}`) || '9'}</span>
         </div>
       </Link>

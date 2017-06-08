@@ -3,6 +3,7 @@ import '../styles/game.css'
 
 class Linescore extends Component {
   render() {
+    console.log(this.props.linescore)
     let boxes
     if (!Array.isArray(this.props.innings)) {
       boxes = []
@@ -27,15 +28,18 @@ class Linescore extends Component {
     let line = this.props.linescore
     let innings = <div>
                     <div className='box'>
-                      <p>{this.props.currentInning.state} {this.props.currentInning.num || 1}</p>
-                      <p>{this.props.teams.home || '-'}</p>
+                      <p>
+                        <span className={'glyphicon glyphicon-triangle-' + (this.props.currentInning.state === 'Top' ? 'top' : 'bottom')}/>
+                        {this.props.currentInning.num || 1}
+                      </p>
                       <p>{this.props.teams.away || '-'}</p>
+                      <p>{this.props.teams.home || '-'}</p>
                     </div>
                     { boxes.map((x, i) => {
                         return <div key={i} className='box'><p>{i + 1}</p><p>{x.away}</p><p>{x.home}</p></div>})}
-                    <div className='box'><p>R</p><p>{line.away_team_runs || '-'}</p><p>{line.home_team_runs || '-'}</p></div>
-                    <div className='box'><p>H</p><p>{line.away_team_hits || '-'}</p><p>{line.home_team_hits || '-'}</p></div>
-                    <div className='box'><p>E</p><p>{line.away_team_errors || '-'}</p><p>{line.home_team_errors || '-'}</p></div>
+                    <div className='box' style={{backgroundColor: 'lightgrey'}}><p>R</p><p>{line.away_team_runs || '-'}</p><p>{line.home_team_runs || '-'}</p></div>
+                    <div className='box' style={{backgroundColor: 'whitesmoke'}}><p>H</p><p>{line.away_team_hits || '-'}</p><p>{line.home_team_hits || '-'}</p></div>
+                    <div className='box' style={{backgroundColor: 'whitesmoke'}}><p>E</p><p>{line.away_team_errors || '-'}</p><p>{line.home_team_errors || '-'}</p></div>
                   </div>
     return (
       <div>

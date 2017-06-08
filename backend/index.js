@@ -41,24 +41,24 @@ app.get('/games/:id', (req, res) => {
             getLinescore(getBatter)))
       }, 5000)
   })
-  res.json({success:true})
+  res.json({success:true, gameID})
 })
 
 app.get('/updategame', (req, res) => {
-  res.json({gameInfo, gameStatus, atBats, linescore, currBatter})
+  res.json({gameInfo, gameStatus, atBats, linescore, currBatter, gameID})
 })
 
 app.get('/preview/:id', (req, res) => {
   resetGameData()
   request(baseMLBURLToday + req.params.id + '/linescore.xml', (error, response, body) => {
     if (error) {
-      console.log(error)
+      console.log('error in /preview', error)
       return
     }
     try {
       res.json(JSON.parse(xmlparser.toJson(body)))
     } catch(err) {
-      console.log(body.game)
+      console.log('error in /preview', err)
     }
   })
 })
@@ -66,7 +66,7 @@ app.get('/preview/:id', (req, res) => {
 app.get('/updatenavbar', (req, res) => {
   request(baseMLBURLToday +'miniscoreboard.json', (error, response, body) => {
     if (error) {
-      console.log(error)
+      console.log('error in updatenavbar', error)
       return
     }
     res.send(JSON.parse(body).data.games.game)
@@ -81,14 +81,14 @@ app.post('/stopserver', (req, res) => {
 app.get('/gamesfordate/:datestring', (req, res) => {
   request(`${baseMLBURL}${req.params.datestring}/miniscoreboard.json`, (error, response, body) => {
     if (error) {
-      console.log(error)
+      console.log('error in gamesfordate', error)
       return res.json([])
     }
     let games = []
     try{ 
       games = JSON.parse(body).data.games.game
     } catch (e) {
-      console.log(e)
+      console.log('error in gamesfordate', e)
     }
     res.json(Array.isArray(games) ? games : [])
   })
@@ -121,7 +121,7 @@ function getRosters(callback) {
       rosters.home  =  gameRosters[1].player
       if (callback) callback()
     } catch (err) {
-      console.log(err)
+      console.log('error in getRosters', err)
       if (callback) callback()
       return
     }
@@ -132,7 +132,7 @@ function getBoxscore(callback) {
   const baseURL = baseMLBURLToday +  gameID
   request(baseURL + '/boxscore.xml', (err, res, body) => {
     if (err) {
-      console.log(err)
+      console.log('error in getBoxscore', err)
       if (callback) callback()
       return
     }
@@ -140,7 +140,7 @@ function getBoxscore(callback) {
       gameInfo = JSON.parse(xmlparser.toJson(body)).boxscore
       if (callback) callback()
     } catch (err) {
-      console.log(err)
+      console.log('error in getBoxscore', err)
       if (callback) callback()
     }
   })
@@ -149,7 +149,7 @@ function getBoxscore(callback) {
 function getAtBats(callback) {
   request(baseMLBURLToday + gameID + '/inning/inning_all.xml', (error, response, body) => {
     if (error) {
-      console.log('getAtBats', error)
+      console.log('error in getAtBats', error)
       if (callback) callback()
       return
     }
@@ -158,7 +158,7 @@ function getAtBats(callback) {
       if (callback) callback()
 
     } catch(e) {
-      console.log('getAtBats', e)
+      console.log('error in getAtBats', e)
       if (callback) callback()
     }
   })
@@ -167,7 +167,7 @@ function getAtBats(callback) {
 function getLinescore(callback) {
   request(baseMLBURLToday + gameID + '/linescore.xml', (error, response, body) => {
     if (error) {
-      console.log(error)
+      console.log('error in getLinescore', error)
       if (callback) callback()
       return
     }
@@ -176,7 +176,7 @@ function getLinescore(callback) {
       gameStatus = linescore.status
       if (callback) callback()
     } catch(e) {
-      console.log(e)
+      console.log('error in getLinescore', e)
       if (callback) callback()
     }
   })
@@ -185,15 +185,15 @@ function getLinescore(callback) {
 function getBatter(callback) {
   request(baseMLBURLToday + gameID + '/plays.json', (error, response, body) => {
     if (error) {
-      console.log(error)
+      console.log('error in getBatter', error)
       if (callback) callback()
       return
     }
     try {
-      currBatter = JSON.parse(body).data.game
+      currBatter = JSON.parse(body).data
       if (callback) callback()
     } catch (e) {
-      console.log(e)
+      console.log('error in getBatter', e)
       currBatter = {empty: true}
       if (callback) callback()
     }

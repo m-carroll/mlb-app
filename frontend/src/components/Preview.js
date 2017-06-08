@@ -2,13 +2,21 @@ import React, { Component } from 'react'
 import '../styles/game.css'
 
 class Preview extends Component {
+
+  componentDidMount() {
+    this.props.loadGame(this.props.params.gameid, true)
+  }
   render() {
     let line = this.props.linescore
-    let res
-    if (line.empty) {
+    let res 
+    if (line.id && line.id.replace(/\/|-/gi, '_') !== this.props.params.gameid) {
+      console.log(line.id.replace(/\/|-/gi, '_'))
+      console.log(this.props.params.gameid)
+    }
+    if (line.empty || line.id && line.id.replace(/\/|-/gi, '_') !== this.props.params.gameid) {
       res = <div>loading...</div>
     } else {
-      let line = this.props.linescore.game
+      line = this.props.linescore.game
       let ap = line.away_probable_pitcher
       let hp = line.home_probable_pitcher
       res = <div className='preview'>

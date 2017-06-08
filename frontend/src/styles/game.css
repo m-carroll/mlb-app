@@ -1,16 +1,43 @@
-/*.body {
-  overflow:hidden;
-}*/
+.body {
+  box-sizing: border-box;
+}
 
 .game {
   position: absolute;
+}
+
+.left-column {
+  display: inline-block;
+  border: 5px solid whitesmoke;
+  vertical-align: top;
+  display:inline-block;
+  height: 800px;
+  /*overflow-y: scroll;*/
+  width: 500px;
+}
+
+.middle-column {
+  position: relative;
+  display: inline-block;
+  width: 500px;
+  height:800px;
+  border: 5px solid whitesmoke;
+  vertical-align: top
+}
+
+.right-column {
+  display: inline-block;
+  border: 5px solid whitesmoke;
+  width: 500px;
+  height: 800px;
+  vertical-align: top
 }
 
 .box {
   display: inline-block;
   border: 1px solid grey;
   text-align: center;
-  width: 75px;
+  width: 35px;
 }
 
 th, td {
@@ -30,29 +57,27 @@ th:first-child, td:first-child {
   text-align: left;
 }
 
-.atbat-selector-container {
-  width: 225px;
-  display:inline-block;
+.atbat-container {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 600px;
+  width: 420px;
+  border: 2px solid lightgrey;
+  background-color: whitesmoke;
 }
 
 .atbat {
-  width:235px;
+  width:400px;
   vertical-align: top;
   padding: 20px;
   border: 1px solid lightgrey;
   background-color: whitesmoke;
 }
 
-.current-atbat {
-  display:inline-block;
-}
-
-.inning-atbats {
-  height: 750px;
-  overflow-y: scroll;
-  width: 250px;
-}
-
 .hidden {
   display: none;
+}
+
+.current-atbat {
+  margin: 100px;
 }

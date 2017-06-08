@@ -5,7 +5,7 @@ class Lineup extends Component {
   render() {
     let b = this.props.batters
     const lineup = this.props.batters
-                    .concat({name_display_first_last:'TOTAL:', ab:b.ab, h:b.h, r:b.r, rbi:b.rbi, bb:b.bb, so:b.so, lob:b.lob, avg:b.avg})
+                    .concat({name_display_first_last:'TOTAL:', ab:b.ab, h:b.h, r:b.r, rbi:b.rbi, bb:b.bb, so:b.so, lob:b.lob, avg:b.avg, obp:b.obp})
                     .map( (x, i) => {
                       return (
                         <tr key={i} className='lineup-player'>
@@ -18,6 +18,7 @@ class Lineup extends Component {
                           <td>{x.so}</td>
                           <td>{x.lob}</td>
                           <td>{x.avg}</td>
+                          <td>{x.obp}</td>
                         </tr>
                       )
                     })
@@ -45,7 +46,7 @@ class Lineup extends Component {
     return(
       <table className='lineup'>
         <thead>
-          <tr>{['BATTING', 'AB', 'R', 'H', 'RBI', 'BB', 'SO', 'LOB', 'AVG'].map((x, i) => {return <th key={i}>{x}</th>})}</tr>
+          <tr>{['BATTING', 'AB', 'R', 'H', 'RBI', 'BB', 'SO', 'LOB', 'AVG', 'OBP'].map((x, i) => {return <th key={i}>{x}</th>})}</tr>
         </thead>
         <tbody>
           {lineup}

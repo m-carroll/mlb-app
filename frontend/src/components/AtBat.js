@@ -26,6 +26,10 @@ class AtBat extends Component {
   }
 
   render() {
+    if (this.props.isCurrentBatter) {
+      console.log(this.props.atBat)
+      console.log(this.props.pitches)
+    }
     const dotColour = {'S':'red', 'C':'red','B':'green', 'X':'blue'}
     let pitchArray = this.props.pitches
     let atBatData = pitchArray.map( (x, i) => {
@@ -75,10 +79,30 @@ class AtBat extends Component {
                         {x:100, y:50}
                       ]}/>*/}
                   </XYPlot>
-    let result = (
-      <div className={this.props.isCurrentBatter ? 'current-atbat': 'atbat'}>
+    let result = <span/>
+    if (this.props.isCurrentBatter) result = (
+      <div className='current-atbat'>
         <div onClick={() => this.props.showHideCard(this.props.index)}>
-          <h4>{this.props.half} {this.props.inning}</h4>
+          <h4>{this.props.half}</h4>
+          <p>{this.props.atBat.atbat.des} <strong>{this.props.atBat.score.hr}-{this.props.atBat.score.ar}</strong></p>
+          <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
+        </div>
+        <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
+          {chart}
+          {pitches}
+        </div>
+        <h4>
+          Pitching: {this.props.atBat.players.pitcher.boxname}
+          <br/>Batting: {this.props.atBat.players.batter.boxname}
+          <br/>On deck: {this.props.onDeck.boxname}
+          <br/>In the hole: {this.props.inHole.boxname}
+        </h4>
+      </div>
+    ) 
+    else result = (
+      <div className='atbat'>
+        <div onClick={() => this.props.showHideCard(this.props.index)}>
+          <h4>{this.props.half}</h4>
           <p>{this.props.atBat.des} <strong>{this.props.atBat.home_team_runs}-{this.props.atBat.away_team_runs}</strong></p>
           <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
         </div>
