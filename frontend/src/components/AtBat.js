@@ -80,6 +80,7 @@ class AtBat extends Component {
                            isColorful={i+1 === value}/>
     })
     const chart = <XYPlot
+                    style={{border:'2px solid black'}}
                     width={this.props.isCurrentBatter ? 300 : 200}
                     height={this.props.isCurrentBatter ? 300 : 200}>
                     <MarkSeries
