@@ -80,7 +80,6 @@ class AtBat extends Component {
                            isColorful={i+1 === value}/>
     })
     const chart = <XYPlot
-                    style={{border:'2px solid black'}}
                     width={this.props.isCurrentBatter ? 300 : 200}
                     height={this.props.isCurrentBatter ? 300 : 200}>
                     <MarkSeries
@@ -153,7 +152,7 @@ class AtBat extends Component {
             </p>
           </div>
           <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
-            <div style={{width: '300px', margin:'0 auto'}}>
+            <div style={{width: '300px', margin:'0 auto', border:'2px solid black'}}>
               {pitches.length ? chart : <h3>No batter</h3>}
             </div>
             <div className={pitches.length ? 'current-atbat-window' : ''}>
@@ -169,7 +168,7 @@ class AtBat extends Component {
           <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
         </div>
         <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
-          <div onClick={() => this.props.showHideCard(this.props.index)}>
+          <div onClick={() => this.props.showHideCard(this.props.index)} style={{border:'2px solid black', width:'200px'}}>
             {pitches.length ? chart : null}
           </div>
           {pitches}
