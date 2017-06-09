@@ -51,8 +51,10 @@ class AtBat extends Component {
     let value = this.state.value
     let pitchArray = this.props.pitches
     let atBatData = pitchArray.map( (x, i) => {
-      let xcoord = Math.floor(-x.x*100)/100
+      let xcoord = Math.floor(-x.x*100)/100 
       let ycoord = Math.floor(-x.y*100)/100
+      // ycoord = ycoord > -100 ? -100 : ycoord < -250 ? -250 : ycoord
+      // xcoord = xcoord > -50 ? -50 : xcoord < -200 ? -200 : xcoord
       return {x:xcoord, y:ycoord, type: x.type, des: x.des, pitchNum:i+1}
     })
     const strikes = atBatData.filter(x => {return x.type === 'S' || 'C'}),
@@ -78,10 +80,8 @@ class AtBat extends Component {
                            isColorful={i+1 === value}/>
     })
     const chart = <XYPlot
-                    width={200}
-                    height={200}>
-                    {/*<XAxis/>
-                    <YAxis/>*/}
+                    width={this.props.isCurrentBatter ? 300 : 200}
+                    height={this.props.isCurrentBatter ? 300 : 200}>
                     <MarkSeries
                       data={strikes}
                       color='red'
@@ -103,6 +103,10 @@ class AtBat extends Component {
                       onValueMouseOver={this.setValue}
                       onValueMouseOut={this.clearValue}
                       />
+                    <MarkSeries
+                      data={[{x:0, y:0}, {x:0, y:-300}, {x:-300,y:0}, {x:-300,y:0}]}
+                      size={0}
+                    />
                     {/*<LineMarkSeries 
                       size={1}
                       data={[
@@ -132,25 +136,27 @@ class AtBat extends Component {
     if (this.props.isCurrentBatter) 
       result = (
         <div className='current-atbat'>
-          <div onClick={() => this.props.showHideCard(this.props.index)}>
+          <div onClick={() => this.props.showHideCard(this.props.index)} className='current-atbat-details'>
             <h4>{this.props.half} {this.props.inning}</h4>
             <h4>
               {this.props.atBat.atbat.des} 
               <br/>B-S: {this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out
             </h4>
+            <p>
+              Pitching: {this.props.atBat.players.pitcher.boxname}
+              <br/>Batting: {this.props.atBat.players.batter.boxname}
+              <br/>On deck: {this.props.onDeck.boxname}
+              <br/>In the hole: {this.props.inHole.boxname}
+            </p>
           </div>
           <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
-            <div style={{padding:'50px'}}>
-              {pitches.length ? chart : null}
+            <div style={{width: '300px', margin:'0 auto'}}>
+              {pitches.length ? chart : <h3>No batter</h3>}
             </div>
-            {pitches.length ? pitches : <h3>At-bat pending...</h3>}
+            <div className={pitches.length ? 'current-atbat-window' : ''}>
+              {pitches}
+            </div>
           </div>
-          <h4>
-            Pitching: {this.props.atBat.players.pitcher.boxname}
-            <br/>Batting: {this.props.atBat.players.batter.boxname}
-            <br/>On deck: {this.props.onDeck.boxname}
-            <br/>In the hole: {this.props.inHole.boxname}
-          </h4>
         </div>
     ) 
     else result = (
@@ -160,10 +166,10 @@ class AtBat extends Component {
           <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
         </div>
         <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
-          <div onClick={() => this.props.showHideCard(this.props.index)} style={{padding:'50px'}}>
+          <div onClick={() => this.props.showHideCard(this.props.index)}>
             {pitches.length ? chart : null}
           </div>
-          {pitches.length ? pitches : <h3>No batter</h3>}
+          {pitches}
         </div>
       </div>
     )

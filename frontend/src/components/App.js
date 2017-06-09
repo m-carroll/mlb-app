@@ -152,6 +152,8 @@ class App extends Component {
   }
 
   changeDate(date) {
+    const homeDate = this.state.homeDate
+    if (date.getFullYear() === homeDate.getFullYear() && date.getMonth() === homeDate.getMonth() && date.getDate() === homeDate.getDate() && this.state.homeGamesDisplayed.length) return
     const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
     axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
          .then( res => {

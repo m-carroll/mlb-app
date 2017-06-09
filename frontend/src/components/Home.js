@@ -68,6 +68,7 @@ class Home extends Component {
     })
     const content = <div>
                       <button className='btn btn-default' onClick={this.showHideCalendar}>{this.state.hidden ? 'Select a date' : 'Hide calendar'}</button>
+                      <button className='btn btn-default' onClick={() => this.props.changeDate(this.today)}>Today's games</button>
                       <div className={this.state.hidden ? 'hidden' : ''}>
                         <Calendar
                           dateFormat="YYYY-MM-DD"

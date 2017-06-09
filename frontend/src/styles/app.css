@@ -7,7 +7,12 @@
   cursor:default;
 }
 
+.game-box:hover {
+  background-color:lightgrey;
+}
+
 .navbar {
   margin: auto 0;
   padding-bottom: 20px;
 }
+
