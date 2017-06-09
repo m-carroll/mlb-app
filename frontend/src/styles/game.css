@@ -12,13 +12,13 @@
   vertical-align: top;
   display:inline-block;
   height: 830px;
-  width: 500px;
+  width: 400px;
 }
 
 .middle-column {
   position: relative;
   display: inline-block;
-  width: 500px;
+  width: 400px;
   height:830px;
   border: 5px solid whitesmoke;
   vertical-align: top
@@ -27,7 +27,7 @@
 .right-column {
   display: inline-block;
   border: 5px solid whitesmoke;
-  width: 500px;
+  width: 450px;
   height: 830px;
   vertical-align: top
 }
@@ -72,13 +72,13 @@ th:first-child, td:first-child {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 650px;
-  width: 420px;
+  width: 350px;
   border: 2px solid lightgrey;
   background-color: whitesmoke;
 }
 
 .atbat {
-  width:400px;
+  width:330px;
   vertical-align: top;
   padding: 20px;
   margin:0;
