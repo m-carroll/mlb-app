@@ -51,12 +51,11 @@ class AtBat extends Component {
     let value = this.state.value
     let pitchArray = this.props.pitches
     let atBatData = pitchArray.map( (x, i) => {
-      let xcoord = Math.floor(x.x*100)/100
-      let ycoord = Math.floor(x.y*100)/100
+      let xcoord = Math.floor(-x.x*100)/100
+      let ycoord = Math.floor(-x.y*100)/100
       return {x:xcoord, y:ycoord, type: x.type, des: x.des, pitchNum:i+1}
     })
-    const calledStrikes = atBatData.filter(x => {return x.des === 'Called Strike'}),
-          swingingStrikes = atBatData.filter(x => {return x.des === 'Swinging Strike' || x.des === 'Foul' || x.des === 'Foul Tip'}),
+    const strikes = atBatData.filter(x => {return x.type === 'S' || 'C'}),
           balls = atBatData.filter(x => {return x.type === 'B'}),
           inPlay = atBatData.filter(x => {return x.type === 'X'})
 
@@ -84,14 +83,7 @@ class AtBat extends Component {
                     {/*<XAxis/>
                     <YAxis/>*/}
                     <MarkSeries
-                      data={calledStrikes}
-                      color='red'
-                      size={10}
-                      onValueMouseOver={this.setValue}
-                      onValueMouseOut={this.clearValue}
-                      />
-                    <MarkSeries
-                      data={swingingStrikes}
+                      data={strikes}
                       color='red'
                       size={10}
                       onValueMouseOver={this.setValue}
@@ -137,38 +129,41 @@ class AtBat extends Component {
                       ]}/>*/}
                   </XYPlot>
     let result = <span/>
-    if (this.props.isCurrentBatter) result = (
-      <div className='current-atbat'>
-        <div onClick={() => this.props.showHideCard(this.props.index)}>
-          <h4>{this.props.half}</h4>
-          <p>{this.props.atBat.atbat.des} <strong>{this.props.atBat.score.hr}-{this.props.atBat.score.ar}</strong></p>
-          <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
-        </div>
-        <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
-          <div style={{padding:'50px'}}>
-            {chart}
+    if (this.props.isCurrentBatter) 
+      result = (
+        <div className='current-atbat'>
+          <div onClick={() => this.props.showHideCard(this.props.index)}>
+            <h4>{this.props.half} {this.props.inning}</h4>
+            <h4>
+              {this.props.atBat.atbat.des} 
+              <br/>B-S: {this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out
+            </h4>
           </div>
-          {pitches}
+          <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
+            <div style={{padding:'50px'}}>
+              {pitches.length ? chart : null}
+            </div>
+            {pitches.length ? pitches : <h3>At-bat pending...</h3>}
+          </div>
+          <h4>
+            Pitching: {this.props.atBat.players.pitcher.boxname}
+            <br/>Batting: {this.props.atBat.players.batter.boxname}
+            <br/>On deck: {this.props.onDeck.boxname}
+            <br/>In the hole: {this.props.inHole.boxname}
+          </h4>
         </div>
-        <h4>
-          Pitching: {this.props.atBat.players.pitcher.boxname}
-          <br/>Batting: {this.props.atBat.players.batter.boxname}
-          <br/>On deck: {this.props.onDeck.boxname}
-          <br/>In the hole: {this.props.inHole.boxname}
-        </h4>
-      </div>
     ) 
     else result = (
-      <div className='atbat'>
+      <div className={`atbat ${(this.props.halfToDisplay === 'BOTH' || this.props.halfToDisplay === this.props.half.toUpperCase()) ? '' : 'hidden' }`}>
         <div onClick={() => this.props.showHideCard(this.props.index)}>
           <p>{this.props.atBat.des} <strong>{this.props.atBat.home_team_runs}-{this.props.atBat.away_team_runs}</strong></p>
           <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
         </div>
         <div className={`pitches ${this.props.hidden ? 'hidden' : ''}`}>
           <div onClick={() => this.props.showHideCard(this.props.index)} style={{padding:'50px'}}>
-            {chart}
+            {pitches.length ? chart : null}
           </div>
-          {pitches}
+          {pitches.length ? pitches : <h3>No batter</h3>}
         </div>
       </div>
     )

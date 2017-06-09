@@ -10,9 +10,17 @@ class Game extends Component {
     this.state={
       selectedInningForAtBats:0,
       selectedInningAtBats:[],
+      halfToDisplay:'BOTH'
     }
     this.setInningAtBats = this.setInningAtBats.bind(this)
     this.showHideCard = this.showHideCard.bind(this)
+    this.setHalf = this.setHalf.bind(this)
+  }
+
+  setHalf(half) {
+    this.setState({
+      halfToDisplay:half
+    })
   }
 
   componentDidMount() {
@@ -88,13 +96,13 @@ class Game extends Component {
                             'Runners on second and third', 
                             'Bases loaded'
                           ]
-      const currBatter = this.props.currBatter
-      const currentAtBat = !currBatter.empty ? <AtBat 
+      const currBatter = this.props.currBatter,
+            currentAtBat = !currBatter.empty ? <AtBat 
                                                   index={0}
                                                   half={currBatter.inningState}
                                                   inning={currBatter.inning}
                                                   atBat={currBatter.game}
-                                                  pitches={Array.isArray(currBatter.game.atbat.p) ? currBatter.game.atbat.p : [currBatter.game.atbat.p]}
+                                                  pitches={Array.isArray(currBatter.game.atbat.p) ? currBatter.game.atbat.p : currBatter.game.atbat.p ? [currBatter.game.atbat.p] : []}
                                                   hidden={false}
                                                   showHideCard={(i)=>{console.log("you can't hide from me!")}}
                                                   isCurrentBatter={true}
@@ -107,10 +115,11 @@ class Game extends Component {
                                                                                   half={x.half}
                                                                                   inning={x.inning}
                                                                                   atBat={x}
-                                                                                  pitches={Array.isArray(x.pitch) ? x.pitch : [x.pitch]}
+                                                                                  pitches={Array.isArray(x.pitch) ? x.pitch : x.pitch ? [x.pitch] : []}
                                                                                   hidden={this.state.hiddenCards[i]}
                                                                                   showHideCard={this.showHideCard}
                                                                                   isCurrentBatter={false}
+                                                                                  halfToDisplay={this.state.halfToDisplay}
                                                                                   />
                                                                   })
       let inningsButtons = []
@@ -127,15 +136,17 @@ class Game extends Component {
               {this.props.linescore.away_name_abbrev} {this.props.linescore.away_team_runs} | {this.props.linescore.home_name_abbrev} {this.props.linescore.home_team_runs}
             </h2>
             <h4>  
-            {this.props.linescore.status === 'Final' ? 'Final' : 
-                (baserunners[this.props.linescore.runner_on_base_status] + ', ' + this.props.linescore.inning_state + ' ' + this.props.linescore.inning + ', ' + this.props.linescore.outs + ' out')}
+              {this.props.linescore.status}{this.props.linescore.status && this.props.linescore.status !== 'Final' && this.props.linescore.status !== 'In Progress' ? `, Starts at ${this.props.linescore.time} ${this.props.linescore.ampm} EST`: null}
+              <br/>{this.props.linescore.status === 'Final' ? null : 
+                  (baserunners[this.props.linescore.runner_on_base_status] + ', ' + this.props.linescore.inning_state + ' ' + this.props.linescore.inning + ', ' + this.props.linescore.outs + ' out')}
             </h4>
             {inningsButtons}
             <div className='atbat-container'>
-              <h1 className='atbat'>TOP</h1>
-              {atBatsForSelectedInning.filter(x => {return x.props.half === 'Top'})}
-              <h1 className='atbat'>Bottom</h1>
-              {atBatsForSelectedInning.filter(x => {return x.props.half !== 'Top'})}
+              <button className={`btn btn-block btn-${this.state.halfToDisplay === 'TOP' ? 'primary' : ''}`} onClick={() => this.setHalf('TOP')}>Top</button>
+              <button className={`btn btn-block btn-${this.state.halfToDisplay === 'BOTTOM' ? 'primary' : ''}`} onClick={() => this.setHalf('BOTTOM')}>Bottom</button>
+              <button className={`btn btn-block btn-${this.state.halfToDisplay === 'BOTH' ? 'primary' : ''}`} onClick={() => this.setHalf('BOTH')}>Both</button>
+              {atBatsForSelectedInning.filter(x => {return x.props.half !== 'Top'}).reverse()}
+              {atBatsForSelectedInning.filter(x => {return x.props.half === 'Top'}).reverse()}
             </div>
           </div>
           <div className='middle-column'>

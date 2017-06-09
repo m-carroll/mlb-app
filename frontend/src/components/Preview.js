@@ -7,8 +7,9 @@ class Preview extends Component {
     this.loaded = false
   }
 
-  componentDidUpdate() {
-    if (!this.loaded) this.props.loadGame(this.props.params.gameid, true)
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.linescore.id && 'gid_' + nextProps.linescore.id.replace(/\/|-/gi, '_') === this.props.params.gameid)
+      this.loaded = true
   }
 
   componentDidMount() {
@@ -17,11 +18,9 @@ class Preview extends Component {
   render() {
     let line = this.props.linescore
     let res 
-    if (line.empty || line.id && this.props.params.gameid !== 'gid_' + line.id.replace(/\/|-/gi, '_')) {
-      this.loaded = false
+    if (!this.loaded || line.empty || line.id && this.props.params.gameid !== 'gid_' + line.id.replace(/\/|-/gi, '_')) {
       res = <div>loading...</div>
     } else {
-      this.loaded = true
       line = this.props.linescore.game
       let ap = line.away_probable_pitcher
       let hp = line.home_probable_pitcher
