@@ -7,8 +7,11 @@ class GameBox extends Component {
     let x = this.props.game
     let splitURL = this.props.linkURL.split('/')
     let isPreview = splitURL[1] === 'preview'
-    // let gameID = isPreview ? splitURL[2] : splitURL[1]
-    let status = x.status
+    let status = 'Final'
+    if (x.status !== 'In Progress') status = x.status
+    else {
+      status = (x.top_inning === 'Y' ? 'Top ':'Bottom ') + x.inning
+    }
     return (
       <Link className='game-box' 
             to={this.props.linkURL} 
@@ -16,7 +19,7 @@ class GameBox extends Component {
         <div>
           <span>{x.away_name_abbrev}: {x.away_team_runs || 0}
           <br/>{x.home_name_abbrev}: {x.home_team_runs || 0}
-          <br/>{x.status === 'Final' ? x.status : x.status === 'Preview' ? x.time : (x.top_inning === 'Y' ? `Top ${x.inning}`: `Bottom ${x.inning}`) || '9'}</span>
+          <br/>{status}</span>
         </div>
       </Link>
     )

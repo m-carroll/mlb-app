@@ -85,21 +85,21 @@ class AtBat extends Component {
                     <MarkSeries
                       data={strikes}
                       color='red'
-                      size={10}
+                      size={this.props.isCurrentBatter? 10 : 5}
                       onValueMouseOver={this.setValue}
                       onValueMouseOut={this.clearValue}
                       />
                     <MarkSeries
                       data={balls}
                       color='lime'
-                      size={10}
+                      size={this.props.isCurrentBatter? 10 : 5}
                       onValueMouseOver={this.setValue}
                       onValueMouseOut={this.clearValue}
                       />
                     <MarkSeries
                       data={inPlay}
                       color='blue'
-                      size={10}
+                      size={this.props.isCurrentBatter? 10 : 5}
                       onValueMouseOver={this.setValue}
                       onValueMouseOut={this.clearValue}
                       />
@@ -139,9 +139,11 @@ class AtBat extends Component {
           <div onClick={() => this.props.showHideCard(this.props.index)} className='current-atbat-details'>
             <h4>{this.props.half} {this.props.inning}</h4>
             <h4>
-              {this.props.atBat.atbat.des} 
-              <br/>B-S: {this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out
+              {this.props.atBat.atbat.des}
             </h4>
+            <h3>
+              B-S: {this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out
+            </h3>
             <p>
               Pitching: {this.props.atBat.players.pitcher.boxname}
               <br/>Batting: {this.props.atBat.players.batter.boxname}
