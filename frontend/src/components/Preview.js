@@ -13,7 +13,7 @@ class Preview extends Component {
   }
 
   componentDidMount() {
-    this.props.loadGame(this.props.params.gameid, true)
+    setTimeout(()=>this.props.loadGame(this.props.params.gameid, true), 1000)
   }
   render() {
     let line = this.props.linescore
