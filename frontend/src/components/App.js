@@ -51,7 +51,7 @@ class App extends Component {
 
   getGameInfo(gameID) {
     if (!gameID) return
-    axios.get('http://localhost:8080/updategame')
+    axios.get('/updategame')
           .then( res => {
             if (res.data.gameID !== gameID) return
             this.setState({
@@ -75,7 +75,7 @@ class App extends Component {
       }, 2000)
     }
     else {
-      axios.get('http://localhost:8080/updatenavbar')
+      axios.get('/updatenavbar')
          .then(res => {
            this.setState({
               games: res.data
@@ -110,7 +110,7 @@ class App extends Component {
   loadGame(gameID, isPreview) {
     if (!gameID) return
     if (isPreview) {
-      axios.get('http://localhost:8080/preview/' + gameID)
+      axios.get('/preview/' + gameID)
           .then( res => {
               setTimeout(() => {
                 this.setState({
@@ -121,7 +121,7 @@ class App extends Component {
             console.log(e)
           })
     } else {
-      axios.get('http://localhost:8080/games/' + gameID)
+      axios.get('/games/' + gameID)
             .then( res => {
               if (res.data.gameID !== gameID) return
               this.startGameUpdates(gameID)
@@ -136,7 +136,7 @@ class App extends Component {
       this.updateNavbar(true)
       this.startGameUpdates(this.state.gameID)
     } else {
-      axios.post('http://localhost:8080/stopserver')
+      axios.post('/stopserver')
            .then(res => {
              console.log(res.data.success)
            })
@@ -155,7 +155,7 @@ class App extends Component {
     const homeDate = this.state.homeDate
     if (date.getFullYear() === homeDate.getFullYear() && date.getMonth() === homeDate.getMonth() && date.getDate() === homeDate.getDate() && this.state.homeGamesDisplayed.length) return
     const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
-    axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
+    axios.get(`/gamesfordate/${dateString}`)
          .then( res => {
            this.setState({
              homeGamesDisplayed: res.data,

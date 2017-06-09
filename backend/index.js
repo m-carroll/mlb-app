@@ -3,11 +3,8 @@ const express = require('express'),
       request = require('request'),
       bodyParser = require('body-parser'),
       xmlparser = require('xml2json'),
-      probables = require('mlbprobablepitchers')
-
-app.listen(8080, () => {
-  console.log('listening on port 8080')
-})
+      probables = require('mlbprobablepitchers'),
+      PORT = process.env.PORT || 8888;
 
 app.use(bodyParser.urlencoded({ extended: false}))
 app.use(function(req, res, next) {
@@ -217,3 +214,13 @@ function resetGameData() {
   linescore = {empty:true}
   currBatter = {empty:true}
 }
+
+
+app.get('*', function (req, res) {
+    res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
+});
+
+app.listen(PORT, () => {
+    console.log('Server running on:' + PORT);
+    console.log('Kill server with CTRL + C');
+});
