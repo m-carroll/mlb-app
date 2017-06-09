@@ -8,7 +8,7 @@ class Preview extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.linescore.id && 'gid_' + nextProps.linescore.id.replace(/\/|-/gi, '_') === this.props.params.gameid)
+    if (nextProps.linescore.game.id && ('gid_' + nextProps.linescore.game.id.replace(/\/|-/gi, '_') === this.props.params.gameid))
       this.loaded = true
   }
 
