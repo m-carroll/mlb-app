@@ -107,30 +107,6 @@ class AtBat extends Component {
                       data={[{x:0, y:0}, {x:0, y:-300}, {x:-300,y:0}, {x:-300,y:0}]}
                       size={0}
                     />
-                    {/*<LineMarkSeries 
-                      size={1}
-                      data={[
-                        {x:50, y:50},
-                        {x:50, y:100}
-                      ]}/>
-                        <LineMarkSeries 
-                      size={1}
-                      data={[
-                        {x:50, y:100},
-                        {x:100, y:100},
-                      ]}/>
-                        <LineMarkSeries 
-                      size={1}
-                      data={[
-                        {x:50, y:50},
-                        {x:100, y:50}
-                      ]}/>
-                        <LineMarkSeries 
-                      size={1}
-                      data={[
-                        {x:100, y:100},
-                        {x:100, y:50}
-                      ]}/>*/}
                   </XYPlot>
     let result = <span/>
     if (this.props.isCurrentBatter) 
