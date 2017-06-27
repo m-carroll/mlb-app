@@ -22,10 +22,8 @@ class Game extends Component {
       halfToDisplay:half
     })
   }
-
   componentDidMount() {
-    //this is for refreshing, does not remount when changing games
-    this.props.loadGame(this.props.params.gameid, false)
+    setTimeout(()=>this.props.loadGame(this.props.params.gameid, false, true), 3000)
   }
 
   showHideCard(index) {
@@ -43,7 +41,7 @@ class Game extends Component {
         selectedInningAtBats: []
       })
     }
-    if (this.props.atBats.empty && !nextProps.atBats.empty) {
+    if (this.props.innings.empty && !nextProps.innings.empty) {
       setTimeout(() => this.setInningAtBats(this.props.linescore.inning), 500)
     }
   }
@@ -51,8 +49,8 @@ class Game extends Component {
   setInningAtBats(inningNumber) {
     let inning = []
     let hiddenCards = []
-    if (inningNumber && !this.props.atBats.empty) {
-      let atBatsInning = Array.isArray(this.props.atBats.inning) ? this.props.atBats.inning[inningNumber-1] : this.props.atBats.inning
+    if (inningNumber && !this.props.innings.empty) {
+      let atBatsInning = Array.isArray(this.props.innings.inning) ? this.props.innings.inning[inningNumber-1] : this.props.innings.inning
       if (atBatsInning.top) {
         inning = inning.concat(Array.isArray(atBatsInning.top.atbat) ? atBatsInning.top.atbat.map(x => {
         x.half = 'Top'
@@ -81,18 +79,21 @@ class Game extends Component {
     // if (this.props.linescore.id) console.log('gid_' + this.props.linescore.id.replace(/\/|-/, '_'))
     if ( !this.props.gameID || 
          this.props.linescore.empty || 
-         this.props.gameInfo.empty || 
-         this.props.atBats.empty || 
+         this.props.boxscore.empty ||
+         this.props.innings.empty || 
          this.props.linescore.id && this.props.gameID !== 'gid_' + this.props.linescore.id.replace(/\/|-/gi, '_') ||
          this.props.currBatter.game && this.props.params.gameid !== 'gid_' + this.props.currBatter.game.id
-      )
-      res = <div>loading...</div>
+      ) {
+        // console.log(this.props.gameID, this.props.linescore, this.props.boxscore, this.props.innings, this.props.linescore.id, this.props.currBatter)
+        res = <div>loading...</div>
+      }
     else {
       const baserunners = [
                             'Bases empty', 
                             'Runner on first', 
                             'Runner on second', 
-                            'Runner on third', 'Runners on first and second', 
+                            'Runner on third', 
+                            'Runners on first and second', 
                             'Runners on second and third', 
                             'Bases loaded'
                           ]
@@ -158,14 +159,14 @@ class Game extends Component {
                 <Linescore currentInning={{num:this.props.linescore.inning, state:this.props.linescore.inning_state || 'END'}}
                             innings={this.props.linescore.linescore} 
                             teams={{home: this.props.linescore.home_name_abbrev, away: this.props.linescore.away_name_abbrev}}
-                            linescore={this.props.gameInfo.linescore}/>
+                            linescore={this.props.boxscore.linescore}/>
                 <div className="lineups-container">
                   <div className='lineup-toggle-box'>
-                    <button className=' btn btn-lg btn-default' onClick={() => this.props.switchTeamDisplayed('home')}>{this.props.gameInfo.home_sname}</button>
-                    <button className='btn btn-lg btn-default' onClick={() => this.props.switchTeamDisplayed('away')}>{this.props.gameInfo.away_sname}</button>
+                    <button className=' btn btn-lg btn-default' onClick={() => this.props.switchTeamDisplayed('home')}>{this.props.boxscore.home_sname}</button>
+                    <button className='btn btn-lg btn-default' onClick={() => this.props.switchTeamDisplayed('away')}>{this.props.boxscore.away_sname}</button>
                   </div>
-                  <Lineup batters={this.props.gameInfo.batting[this.props.teamDisplayed === 'home' ? 0 : 1]} 
-                          pitchers={this.props.gameInfo.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}/>
+                  <Lineup batters={this.props.boxscore.batting[this.props.teamDisplayed === 'home' ? 0 : 1]} 
+                          pitchers={this.props.boxscore.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}/>
                 </div>
               </div>
             </div>

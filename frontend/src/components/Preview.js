@@ -8,20 +8,26 @@ class Preview extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.linescore.game.id && ('gid_' + nextProps.linescore.game.id.replace(/\/|-/gi, '_') === this.props.params.gameid))
+    // console.log(nextProps)
+    if (nextProps.linescore.game && ('gid_' + nextProps.linescore.game.id.replace(/\/|-/gi, '_') === this.props.params.gameid))
       this.loaded = true
   }
 
   componentDidMount() {
-    setTimeout(()=>this.props.loadGame(this.props.params.gameid, true), 1000)
+    setTimeout(()=>this.props.loadGame(this.props.params.gameid, true, true), 1000)
   }
+
   render() {
     let line = this.props.linescore
     let res 
-    if (!this.loaded || line.empty || line.id && this.props.params.gameid !== 'gid_' + line.id.replace(/\/|-/gi, '_')) {
+    console.log(line)
+    if ( 
+        !line || 
+        line.empty ||
+        line.gameday_link && this.props.params.gameid !== 'gid_' + line.gameday_link
+        ) {
       res = <div>loading...</div>
     } else {
-      line = this.props.linescore.game
       let ap = line.away_probable_pitcher
       let hp = line.home_probable_pitcher
       res = <div className='preview'>

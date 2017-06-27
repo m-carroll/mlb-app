@@ -9,8 +9,7 @@ class Home extends Component {
   constructor() {
     super()
     this.state = {
-      hidden: true,
-      showGames:true
+      hidden: true
     }
     this.today = new Date()
     this.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -20,20 +19,6 @@ class Home extends Component {
     this.padDigit = this.padDigit.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.homeGamesDisplayed !== this.props.homeGamesDisplayed) {
-      this.setState({
-        showGames: true
-      })
-    }
-  }
-
-  isCurrentDay() {
-    const currDate = new Date()
-    const homeDate = this.props.homeDate
-    return homeDate.getFullYear() === currDate.getFullYear() && homeDate.getMonth() === currDate.getMonth() && homeDate.getDate() === currDate.getDate()
-  }
-
   showHideCalendar() {
     this.setState({
       hidden:!this.state.hidden
@@ -41,12 +26,8 @@ class Home extends Component {
   }
   
   onChange (dateString, { dateMoment, timestamp }) {
-      const splitDate = dateString.split('-')
-      this.props.changeDate(new Date(splitDate[0], Number(splitDate[1]-1), splitDate[2]))
+      this.props.changeDate(dateString)
       this.showHideCalendar()
-      this.setState({
-        showGames:false
-      })
   }
 
   padDigit(n) {
@@ -54,7 +35,7 @@ class Home extends Component {
   }
   
   render() {
-    let games = this.props.homeGamesDisplayed.map( (x, i) => {
+    let games = this.props.homeGames.map( (x, i) => {
       return (
               <div key={i}>
                 <Link 
@@ -72,19 +53,15 @@ class Home extends Component {
                       <div className={this.state.hidden ? 'hidden' : ''}>
                         <Calendar
                           dateFormat="YYYY-MM-DD"
-                          date={this.props.homeDate.getFullYear()+'-'+this.padDigit((Number(this.props.homeDate.getMonth())+1))+'-'+this.padDigit(this.props.homeDate.getDate())}
+                          date={this.props.homeDateString}
                           onChange={this.onChange}
                         />
                       </div>
                     </div>
-    
-    if (!this.state.showGames) {
-      games = []
-    }
-    const d = this.props.homeDate
+    const d = this.props.homeDateString.split('-')
     return (
     <div className='home'>
-      <h1>{this.days[d.getDay()]} {this.months[d.getMonth()]} {d.getDate()}, {d.getFullYear()}</h1>
+      <h1>{this.days[this.props.homeDate.getDay()]}{this.months[Number(d[1])]} {d[2]}, {d[0]}</h1>
       {content}
       {games}
     </div>
