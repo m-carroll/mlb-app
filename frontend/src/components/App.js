@@ -14,7 +14,6 @@ class App extends Component {
       gameID: '',
       gameStatus: 'Preview',
       teamDisplayed: 'home',
-      rosters: {home: [],away: []},
       gameInfo: {
         linescore: {inning_line_score:[]},
         home_team_code: '',
@@ -51,7 +50,7 @@ class App extends Component {
 
   getGameInfo(gameID) {
     if (!gameID) return
-    axios.get('/updategame')
+    axios.get('http://localhost:8080/updategame')
           .then( res => {
             if (res.data.gameID !== gameID) return
             this.setState({
@@ -75,7 +74,7 @@ class App extends Component {
       }, 2000)
     }
     else {
-      axios.get('/updatenavbar')
+      axios.get('http://localhost:8080/updatenavbar')
          .then(res => {
            this.setState({
               games: res.data
@@ -98,52 +97,23 @@ class App extends Component {
             console.log(e)
           })
     }
-    if (nextProps.params.gameid !== this.props.params.gameid) {
+    else if (nextProps.params.gameid !== this.props.params.gameid) {
       this.setState({
         atBats:{empty:true}
       })
-      let isPreview = nextProps.location.pathname.split('/')[1] === 'preview'
-      this.loadGame(nextProps.params.gameid, isPreview)
+      this.loadGame(nextProps.params.gameid)
     }
   }
 
-  loadGame(gameID, isPreview) {
+  loadGame(gameID) {
     if (!gameID) return
-    if (isPreview) {
-      axios.get('/preview/' + gameID)
+    
+    axios.get('http://localhost:8080/games/' + gameID)
           .then( res => {
-              setTimeout(() => {
-                this.setState({
-                  linescore: res.data
-                })
-              }, 1000)
-          }).catch(e => {
-            console.log(e)
+            this.startGameUpdates(gameID)
+          }).catch(err => {
+            console.log(err)
           })
-    } else {
-      axios.get('/games/' + gameID)
-            .then( res => {
-              if (res.data.gameID !== gameID) return
-              this.startGameUpdates(gameID)
-            }).catch(err => {
-              console.log(err)
-            })
-    }
-  }
-
-  toggleServer() {
-    if (!this.state.update) {
-      this.updateNavbar(true)
-      this.startGameUpdates(this.state.gameID)
-    } else {
-      axios.post('/stopserver')
-           .then(res => {
-             console.log(res.data.success)
-           })
-    }
-    this.setState({
-      update: !this.state.update
-    })
   }
 
   componentDidMount() {
@@ -155,7 +125,7 @@ class App extends Component {
     const homeDate = this.state.homeDate
     if (date.getFullYear() === homeDate.getFullYear() && date.getMonth() === homeDate.getMonth() && date.getDate() === homeDate.getDate() && this.state.homeGamesDisplayed.length) return
     const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
-    axios.get(`/gamesfordate/${dateString}`)
+    axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
          .then( res => {
            this.setState({
              homeGamesDisplayed: res.data,
@@ -174,8 +144,8 @@ class App extends Component {
     const gameboxes = this.state.games.map( (x, i) => {
       return <GameBox game={x} 
                       key={i}
-                      linkURL={(x.status === 'Preview' || x.status === 'Pre-Game' ? '/preview' : '/games') + `/gid_${x.id.replace(/\/|-/gi, '_')}`}
-                      updateApp={this.updateApp} />
+                      linkURL={`/games/gid_${x.id.replace(/\/|-/gi, '_')}`}
+                      />
     })
     return (
       <div className="App">
