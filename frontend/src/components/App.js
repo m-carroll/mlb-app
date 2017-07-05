@@ -12,9 +12,9 @@ class App extends Component {
       homeGamesDisplayed: [],
       games: [],
       gameID: '',
-      gameStatus: 'Preview',
+      gameStatus: '',
       teamDisplayed: 'home',
-      gameInfo: {
+      boxscore: {
         linescore: {inning_line_score:[]},
         home_team_code: '',
         away_team_code: '',
@@ -24,11 +24,8 @@ class App extends Component {
       atBats: {empty: true},
       linescore: {empty:true},
       currBatter:{empty:true},
-      update:true
     }
     this.switchTeamDisplayed = this.switchTeamDisplayed.bind(this)
-    this.startGameUpdates = this.startGameUpdates.bind(this)
-    this.toggleServer = this.toggleServer.bind(this)
     this.updateNavbar = this.updateNavbar.bind(this)
     this.changeDate = this.changeDate.bind(this)
     this.loadGame = this.loadGame.bind(this)
@@ -40,23 +37,15 @@ class App extends Component {
     })
   }
 
-  startGameUpdates(gameID) {
-    setTimeout(() => this.getGameInfo(gameID), 1000)
-    const clear = setInterval(() => {
-      if (!this.state.gameID || this.state.gameStatus === 'Preview' || !this.state.update) clearInterval(clear)
-      else this.getGameInfo(gameID)
-    }, 2000)
-  }
-
   getGameInfo(gameID) {
-    if (!gameID) return
-    axios.get('http://localhost:8080/updategame')
+    axios.get('/games/' + gameID)
           .then( res => {
-            if (res.data.gameID !== gameID) return
+            if (gameID !== this.state.gameID) return
+            console.log(res.data)
             this.setState({
               gameID: gameID,
-              gameInfo: res.data.gameInfo,
-              gameStatus: res.data.gameStatus,
+              boxscore: res.data.boxscore,
+              gameStatus: res.data.linescore.status || 'Preview',
               atBats: res.data.atBats,
               linescore: res.data.linescore,
               currBatter: res.data.currBatter,
@@ -74,7 +63,7 @@ class App extends Component {
       }, 2000)
     }
     else {
-      axios.get('http://localhost:8080/updatenavbar')
+      axios.get('/updatenavbar')
          .then(res => {
            this.setState({
               games: res.data
@@ -106,14 +95,14 @@ class App extends Component {
   }
 
   loadGame(gameID) {
-    if (!gameID) return
-    
-    axios.get('http://localhost:8080/games/' + gameID)
-          .then( res => {
-            this.startGameUpdates(gameID)
-          }).catch(err => {
-            console.log(err)
-          })
+    this.setState({
+      gameID:gameID,
+    })
+    this.getGameInfo(gameID)
+    const clear = setInterval(() => {
+      if (!this.state.gameID || gameID !== this.state.gameID) clearInterval(clear)
+      else this.getGameInfo(gameID)
+    }, 10000)
   }
 
   componentDidMount() {
@@ -123,9 +112,14 @@ class App extends Component {
 
   changeDate(date) {
     const homeDate = this.state.homeDate
-    if (date.getFullYear() === homeDate.getFullYear() && date.getMonth() === homeDate.getMonth() && date.getDate() === homeDate.getDate() && this.state.homeGamesDisplayed.length) return
+    if (
+        date.getFullYear() === homeDate.getFullYear() && 
+        date.getMonth() === homeDate.getMonth() && 
+        date.getDate() === homeDate.getDate() && 
+        this.state.homeGamesDisplayed.length
+      ) return
     const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
-    axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
+    axios.get(`/gamesfordate/${dateString}`)
          .then( res => {
            this.setState({
              homeGamesDisplayed: res.data,
@@ -150,12 +144,11 @@ class App extends Component {
     return (
       <div className="App">
         <Link to='/'><button className='btn btn-default'>Home</button></Link>
-        <button className='btn btn-default' onClick={this.toggleServer}>{this.state.update ? 'Disconnect from server' : 'Reconnect to server'}</button>
         <div className='navbar'>
           {gameboxes}
         </div>
         {React.cloneElement(this.props.children, { 
-                                                   gameInfo: this.state.gameInfo,
+                                                   boxscore: this.state.boxscore,
                                                    gameID: this.state.gameID,
                                                    teamDisplayed: this.state.teamDisplayed,
                                                    atBats: this.state.atBats,

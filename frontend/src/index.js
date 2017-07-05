@@ -12,7 +12,6 @@ ReactDOM.render(
     <Route path='/' component={App}>
       <IndexRoute component={Home}/>
       <Route path='/games/:gameid' component={Game}/>
-      <Route path='/preview/:gameid' component={Preview}/>
     </Route>
   </Router>,
   document.getElementById('root')

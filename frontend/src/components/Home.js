@@ -58,7 +58,7 @@ class Home extends Component {
       return (
               <div key={i}>
                 <Link 
-                  to={`/${x.status === 'Preview' ? 'preview' : 'games'}/gid_${x.id.replace(/\/|-/gi, '_')}`}
+                  to={`/games/gid_${x.id.replace(/\/|-/gi, '_')}`}
                   style={{color: 'black', textDecoration:'none'}}
                   >
                   <h3>{x.away_team_name} ({x.away_win}-{x.away_loss}) at {x.home_team_name} ({x.home_win}-{x.home_loss}) | {x.time} {x.ampm} {x.time_zone}</h3>

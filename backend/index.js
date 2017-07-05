@@ -13,30 +13,104 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     next()
 })
-// app.use(express.static(__dirname + './../frontend/build'))
+app.use(express.static(__dirname + './../frontend/build'))
 
 function padDigit(n) {
   return n < 10 ? '0' + n : String(n)
 }
 
-let date = new Date(),
-    baseMLBURL = 'http://gd2.mlb.com/components/game/mlb/',
-    baseMLBURLToday = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
+const baseMLBURL = 'http://gd2.mlb.com/components/game/mlb/'
 
 app.get('/', (req, res) => {
+  res.json({'success':true})
 })
 
 app.get('/games/:id', (req, res) => {
-  const linescore = {empty: true},
-        boxscore = {empty: true},
-        atBats = {empty: true},
-        currBatter = {empty: true},
-        gameID = req.params.id
+  const splitDate = req.params.id.split('_').splice(1, 3)
+  const url = `${baseMLBURL}/year_${splitDate[0]}/month_${splitDate[1]}/day_${splitDate[2]}/${req.params.id}`
 
-  linescore = getLinescore(gameID, () => {
-    boxscore = getBoxscore(gameID, () => {
-      atBats = getAtBats(gameID, () => {
-        currBatter = getBatter(gameID, () => {
+  let linescore = {empty: true},
+      boxscore = {
+                  linescore: {inning_line_score:[]},
+                  home_team_code: '',
+                  away_team_code: '',
+                  batting: [{batter:[]}, {batter:[]}],
+                  pitching: [{pitcher:[]},{pitcher:[]}]
+                },
+      atBats = {empty: true},
+      currBatter = {empty: true},
+      gameID = req.params.id
+
+  function getLinescore(callback) {
+    request(url + '/linescore.xml', (error, response, body) => {
+      if (error) {
+        console.log('error in getLinescore', error)
+        if (callback) callback()
+        return
+      }
+      try {
+        linescore = JSON.parse(xmlparser.toJson(body)).game
+        if (callback) callback()
+      } catch(e) {
+        console.log('error in getLinescore', e)
+      }
+    })
+  }
+
+  function getBoxscore(callback) {
+    request(url + '/boxscore.xml', (err, res, body) => {
+      if (err) {
+        console.log('error in getBoxscore', err)
+        if (callback) callback()
+        return
+      }
+      try {
+        boxscore = JSON.parse(xmlparser.toJson(body)).boxscore
+        if (callback) callback()
+      } catch (err) {
+        console.log('error in getBoxscore', err)
+      }
+    })
+  }
+
+  function getAtBats(callback) {
+    request(url + '/inning/inning_all.xml', (error, response, body) => {
+      if (error) {
+        console.log('error in getAtBats', error)
+        if (callback) callback()
+        return
+      }
+      try {
+        atBats = JSON.parse(xmlparser.toJson(body)).game
+        if (callback) callback()
+      } catch(e) {
+        console.log('error in getAtBats', e)
+      }
+    })
+  }
+
+  function getBatter(callback) {
+    request(url + '/plays.json', (error, response, body) => {
+      if (error) {
+        console.log('error in getBatter', error)
+        if (callback) callback()
+        return
+      }
+      try {
+        currBatter = JSON.parse(body).data
+        if (callback) callback()
+      } catch (e) {
+        console.log('error in getBatter', e)
+      }
+    })
+  }
+
+  getLinescore(() => {
+    if (linescore.status === 'Preview') res.json({boxscore, atBats, currBatter, linescore})
+    else 
+    getBoxscore(() => {
+      getAtBats(() => {
+        getBatter(() => {
           res.json({boxscore, atBats, currBatter, linescore})
         })
       })
@@ -44,28 +118,15 @@ app.get('/games/:id', (req, res) => {
   })
 })
 
-// app.get('/preview/:id', (req, res) => {
-//   resetGameData()
-//   request(baseMLBURLToday + req.params.id + '/linescore.xml', (error, response, body) => {
-//     if (error) {
-//       console.log('error in /preview', error)
-//       return
-//     }
-//     try {
-//       res.json(JSON.parse(xmlparser.toJson(body)))
-//     } catch(err) {
-//       console.log('error in /preview', err)
-//     }
-//   })
-// })
-
 app.get('/updatenavbar', (req, res) => {
+  const date = new Date(),
+        baseMLBURLToday = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
   request(baseMLBURLToday +'miniscoreboard.json', (error, response, body) => {
     if (error) {
       console.log('error in updatenavbar', error)
       return
     }
-    res.send(JSON.parse(body).data.games.game)
+    res.json(JSON.parse(body).data.games.game)
   })
 })
 
@@ -88,84 +149,16 @@ app.get('/gamesfordate/:datestring', (req, res) => {
   })
 })
 
-function getLinescore(gameID, callback) {
-  request(baseMLBURLToday + gameID + '/linescore.xml', (error, response, body) => {
-    if (error) {
-      console.log('error in getLinescore', error)
-      if (callback) callback()
-      return
-    }
-    try {
-      const linescore = JSON.parse(xmlparser.toJson(body)).game
-      if (callback && linescore.status !== 'Preview') callback()
-      return linescore
-    } catch(e) {
-      console.log('error in getLinescore', e)
-    }
-  })
-}
-
-function getBoxscore(gameID, callback) {
-  const baseURL = baseMLBURLToday +  gameID
-  request(baseURL + '/boxscore.xml', (err, res, body) => {
-    if (err) {
-      console.log('error in getBoxscore', err)
-      if (callback) callback()
-      return
-    }
-    try {
-      if (callback) callback()
-      return JSON.parse(xmlparser.toJson(body)).boxscore
-    } catch (err) {
-      console.log('error in getBoxscore', err)
-    }
-  })
-}
-
-function getAtBats(gameID, callback) {
-  request(baseMLBURLToday + gameID + '/inning/inning_all.xml', (error, response, body) => {
-    if (error) {
-      console.log('error in getAtBats', error)
-      if (callback) callback()
-      return
-    }
-    try {
-      if (callback) callback()
-      return JSON.parse(xmlparser.toJson(body)).game
-    } catch(e) {
-      console.log('error in getAtBats', e)
-    }
-  })
-}
-
-function getBatter(gameID, callback) {
-  request(baseMLBURLToday + gameID + '/plays.json', (error, response, body) => {
-    if (error) {
-      console.log('error in getBatter', error)
-      if (callback) callback()
-      return
-    }
-    try {
-      if (callback) callback()
-      return JSON.parse(body).data
-    } catch (e) {
-      console.log('error in getBatter', e)
-      return {empty: true}
-    }
-  })
-}
-
-
-// app.get('*', function (req, res) {
-//     res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
-// });
-
-app.listen(8080, () => {
-    console.log('Server running on: 8080');
-    console.log('Kill server with CTRL + C');
+app.get('*', function (req, res) {
+    res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
 });
 
-// app.listen(PORT, () => {
-//     console.log('Server running on:' + PORT);
+// app.listen(8080, () => {
+//     console.log('Server running on: 8080');
 //     console.log('Kill server with CTRL + C');
 // });
+
+app.listen(PORT, () => {
+    console.log('Server running on:' + PORT);
+    console.log('Kill server with CTRL + C');
+});
