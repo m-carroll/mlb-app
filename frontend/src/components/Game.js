@@ -46,6 +46,10 @@ class Game extends Component {
     if (this.props.atBats.empty && !nextProps.atBats.empty) {
       setTimeout(() => this.setInningAtBats(this.props.linescore.inning), 500)
     }
+    //if the next props contain a new atbat for the selected inning
+    if (nextProps.atBats.inning) {
+      this.setInningAtBats(this.state.selectedInningForAtBats)
+    }
   }
 
   setInningAtBats(inningNumber) {
@@ -79,7 +83,6 @@ class Game extends Component {
   render() {
     console.log(this.props)
     let res
-    // if (this.props.linescore.id) console.log('gid_' + this.props.linescore.id.replace(/\/|-/, '_'))
     if (this.props.linescore.status === 'Preview') {
       let line = this.props.linescore
       let ap = line.away_probable_pitcher

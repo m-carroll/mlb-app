@@ -38,7 +38,7 @@ class App extends Component {
   }
 
   getGameInfo(gameID) {
-    axios.get('/games/' + gameID)
+    axios.get('http://localhost:8080/games/' + gameID)
           .then( res => {
             if (gameID !== this.state.gameID) return
             console.log(res.data)
@@ -63,7 +63,7 @@ class App extends Component {
       }, 2000)
     }
     else {
-      axios.get('/updatenavbar')
+      axios.get('http://localhost:8080/updatenavbar')
          .then(res => {
            this.setState({
               games: res.data
@@ -77,7 +77,7 @@ class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.location.pathname === '/') {
-      axios.get('/')
+      axios.get('http://localhost:8080/')
            .then( res => {
              this.setState({
                gameID: ''
@@ -119,7 +119,7 @@ class App extends Component {
         this.state.homeGamesDisplayed.length
       ) return
     const dateString = `${this.padDigit(date.getFullYear())}_${this.padDigit(Number(date.getMonth()+1))}_${this.padDigit(date.getDate())}`
-    axios.get(`/gamesfordate/${dateString}`)
+    axios.get(`http://localhost:8080/gamesfordate/${dateString}`)
          .then( res => {
            this.setState({
              homeGamesDisplayed: res.data,
