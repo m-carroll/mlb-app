@@ -149,16 +149,16 @@ app.get('/gamesfordate/:datestring', (req, res) => {
   })
 })
 
-// app.get('*', function (req, res) {
-//     res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
-// });
-
-app.listen(8080, () => {
-    console.log('Server running on: 8080');
-    console.log('Kill server with CTRL + C');
+app.get('*', function (req, res) {
+    res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
 });
 
-// app.listen(PORT, () => {
-//     console.log('Server running on:' + PORT);
+// app.listen(8080, () => {
+//     console.log('Server running on: 8080');
 //     console.log('Kill server with CTRL + C');
 // });
+
+app.listen(PORT, () => {
+    console.log('Server running on:' + PORT);
+    console.log('Kill server with CTRL + C');
+});
