@@ -9,6 +9,7 @@
 
 .game-box:hover {
   background-color:lightgrey;
+  cursor: pointer;
 }
 
 .navbar {

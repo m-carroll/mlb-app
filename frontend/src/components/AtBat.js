@@ -139,7 +139,7 @@ class AtBat extends Component {
     ) 
     else result = (
       <div className={`atbat ${(this.props.halfToDisplay === 'BOTH' || this.props.halfToDisplay === this.props.half.toUpperCase()) ? '' : 'hidden' }`}>
-        <div onClick={() => this.props.showHideCard(this.props.index)}>
+        <div onClick={() => this.props.showHideCard(this.props.index)} className='pointer'>
           <p>{this.props.atBat.des} <strong>{this.props.atBat.home_team_runs}-{this.props.atBat.away_team_runs}</strong></p>
           <p>{this.props.atBat.b}-{this.props.atBat.s}, {this.props.atBat.o} out</p>
         </div>

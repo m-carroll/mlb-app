@@ -110,3 +110,7 @@ th:first-child, td:first-child {
   margin: 0 auto;
   text-align: center;
 }
+
+.pointer:hover {
+  cursor: pointer;
+}
