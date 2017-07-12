@@ -27,8 +27,7 @@ app.get('/', (req, res) => {
 
 app.get('/games/:id', (req, res) => {
   const splitDate = req.params.id.split('_').splice(1, 3)
-  const url = `${baseMLBURL}/year_${splitDate[0]}/month_${splitDate[1]}/day_${splitDate[2]}/${req.params.id}`
-
+  const url = `${baseMLBURL}year_${splitDate[0]}/month_${splitDate[1]}/day_${splitDate[2]}/${req.params.id}`
   let linescore = {empty: true},
       boxscore = {
                   linescore: {inning_line_score:[]},
@@ -120,7 +119,7 @@ app.get('/games/:id', (req, res) => {
 
 app.get('/updatenavbar', (req, res) => {
   const date = new Date(),
-        baseMLBURLToday = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
+        baseMLBURLToday = `${baseMLBURL}year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
   request(baseMLBURLToday +'miniscoreboard.json', (error, response, body) => {
     if (error) {
       console.log('error in updatenavbar', error)
@@ -133,7 +132,7 @@ app.get('/updatenavbar', (req, res) => {
 app.get('/gamesfordate/:datestring', (req, res) => {
   const splitDate = req.params.datestring.split('_')
   date = new Date(splitDate[0], Number(splitDate[1])-1, splitDate[2])
-  const reqURL = `${baseMLBURL}/year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
+  const reqURL = `${baseMLBURL}year_${date.getFullYear()}/month_${padDigit(date.getMonth()+1)}/day_${padDigit(date.getDate())}/`
   request(`${reqURL}miniscoreboard.json`, (error, response, body) => {
     if (error) {
       console.log('error in gamesfordate', error)

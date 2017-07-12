@@ -40,8 +40,6 @@ class App extends Component {
   getGameInfo(gameID) {
     axios.get('/games/' + gameID)
           .then( res => {
-            if (gameID !== this.state.gameID) return
-            console.log(res.data)
             this.setState({
               gameID: gameID,
               boxscore: res.data.boxscore,
@@ -66,7 +64,7 @@ class App extends Component {
       axios.get('/updatenavbar')
          .then(res => {
            this.setState({
-              games: res.data
+              games: res.data || []
            })
          })
          .catch(err => {
@@ -96,7 +94,7 @@ class App extends Component {
 
   loadGame(gameID) {
     this.setState({
-      gameID:gameID,
+      gameID
     })
     this.getGameInfo(gameID)
     const clear = setInterval(() => {
