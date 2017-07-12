@@ -13,7 +13,7 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     next()
 })
-app.use(express.static(__dirname + './../frontend/build'))
+// app.use(express.static(__dirname + './../frontend/build'))
 
 function padDigit(n) {
   return n < 10 ? '0' + n : String(n)
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
   res.json({'success':true})
 })
 
-app.get('/games/:id', (req, res) => {
+app.get('localhost:8080/games/:id', (req, res) => {
   const splitDate = req.params.id.split('_').splice(1, 3)
   const url = `${baseMLBURL}/year_${splitDate[0]}/month_${splitDate[1]}/day_${splitDate[2]}/${req.params.id}`
 
@@ -126,6 +126,7 @@ app.get('/updatenavbar', (req, res) => {
       console.log('error in updatenavbar', error)
       return
     }
+    console.log(body)
     res.json(JSON.parse(body).data.games.game)
   })
 })
@@ -149,16 +150,16 @@ app.get('/gamesfordate/:datestring', (req, res) => {
   })
 })
 
-app.get('*', function (req, res) {
-    res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
-});
-
-// app.listen(8080, () => {
-//     console.log('Server running on: 8080');
-//     console.log('Kill server with CTRL + C');
+// app.get('*', function (req, res) {
+//     res.sendFile(path.resolve((__dirname + './../frontend/build/index.html')));
 // });
 
-app.listen(PORT, () => {
-    console.log('Server running on:' + PORT);
+app.listen(8080, () => {
+    console.log('Server running on: 8080');
     console.log('Kill server with CTRL + C');
 });
+
+// app.listen(PORT, () => {
+//     console.log('Server running on:' + PORT);
+//     console.log('Kill server with CTRL + C');
+// });
