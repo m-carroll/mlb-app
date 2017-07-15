@@ -10,7 +10,7 @@ class Game extends Component {
     this.state={
       selectedInningForAtBats:0,
       selectedInningAtBats:[],
-      halfToDisplay:'BOTH'
+      halfToDisplay:'BOTH',
     }
     this.setInningAtBats = this.setInningAtBats.bind(this)
     this.showHideCard = this.showHideCard.bind(this)
@@ -59,10 +59,10 @@ class Game extends Component {
       let atBatsInning = Array.isArray(this.props.atBats.inning) ? this.props.atBats.inning[inningNumber-1] : this.props.atBats.inning
       if (atBatsInning.top) {
         inning = inning.concat(Array.isArray(atBatsInning.top.atbat) ? atBatsInning.top.atbat.map(x => {
-        x.half = 'Top'
-        x.inning = inningNumber
-        return x
-      }) : atBatsInning.top.atbat ? [atBatsInning.top.atbat] : [])
+          x.half = 'Top'
+          x.inning = inningNumber
+          return x
+        }) : atBatsInning.top.atbat ? [atBatsInning.top.atbat] : [])
       }
       if (atBatsInning.bottom) {
         inning = inning.concat(Array.isArray(atBatsInning.bottom.atbat) ? atBatsInning.bottom.atbat.map(x => {
@@ -112,7 +112,8 @@ class Game extends Component {
                             'Bases empty', 
                             'Runner on first', 
                             'Runner on second', 
-                            'Runner on third', 'Runners on first and second', 
+                            'Runner on third', 
+                            'Runners on first and second', 
                             'Runners on second and third', 
                             'Bases loaded'
                           ]
@@ -185,7 +186,8 @@ class Game extends Component {
                     <button className='btn btn-lg btn-default' onClick={() => this.props.switchTeamDisplayed('away')}>{this.props.boxscore.away_sname}</button>
                   </div>
                   <Lineup batters={this.props.boxscore.batting[this.props.teamDisplayed === 'home' ? 0 : 1]} 
-                          pitchers={this.props.boxscore.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}/>
+                          pitchers={this.props.boxscore.pitching[this.props.teamDisplayed === 'home' ? 1 : 0]}
+                          />
                 </div>
               </div>
             </div>

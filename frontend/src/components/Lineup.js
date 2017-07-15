@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import  { Link } from 'react-router'
 import '../styles/game.css'
 
 class Lineup extends Component {
@@ -10,7 +11,7 @@ class Lineup extends Component {
                     .map( (x, i) => {
                       return (
                         <tr key={i} className={`lineup-player ${i%2===0 ? 'lightgrey':''}`}>
-                          <td>{x.name_display_first_last} <strong>{x.pos}</strong></td>
+                          <td><Link to={`/player/${x.name_display_first_last.toLowerCase().split(' ').join('_')}`}>{x.name_display_first_last}<strong>{x.pos}</strong></Link></td>
                           <td>{x.ab}</td>
                           <td>{x.r}</td>
                           <td>{x.h}</td>
@@ -32,7 +33,7 @@ class Lineup extends Component {
                 }).map( (x, i) => {
                   return (
                     <tr key={i} className={`pitcher-player ${i%2===0 ? 'lightgrey':''}`}>
-                      <td>{x.name_display_first_last} </td>
+                      <td><Link to={`/player/${x.name_display_first_last.toLowerCase().split(' ').join('_')}`}>{x.name_display_first_last}</Link></td>
                       <td>{(x.out - x.out % 3)/3}.{x.out%3}</td>
                       <td>{x.h}</td>
                       <td>{x.r}</td>
